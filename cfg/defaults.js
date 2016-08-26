@@ -47,7 +47,7 @@ function getDefaultModules() {
       {
         test: /\.json$/,
         loader: 'json-loader'
-      }
+      },
       {
         test: /\.(png|jpg|gif|woff|woff2)$/,
         loader: 'url-loader?limit=8192'
