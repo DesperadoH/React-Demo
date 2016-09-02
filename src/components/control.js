@@ -15,6 +15,11 @@ function getRangeRandom(low, high){
     return Math.floor(Math.random() * (high - low) + low);
 }
 
+function getDegRandom(deg){
+   var deg = Math.floor(Math.random() * deg);
+   var num = Math.random() > 0.5 ? -1 : 1;
+   return deg * num ;
+}
 
 let Constant = {
     //图片
@@ -57,6 +62,9 @@ let Constant = {
 
             // 首先居中 centerIndex 的图片
             imgsArrangeCenterArr[0].pos = centerPos;
+            //居中的图片不需要旋转
+            imgsArrangeCenterArr[0].rotate = 0;
+            
 
             // 取出要布局上侧的图片的状态信息
             topImgSpliceIndex = Math.floor(Math.random() * (imgsArrangeArr.length - topImgNum));
@@ -68,6 +76,7 @@ let Constant = {
                     top: getRangeRandom(vPosRangeTopY[0], vPosRangeTopY[1]),
                     left: getRangeRandom(vPosRangeX[0], vPosRangeX[1])
                 }
+                imgsArrangeTopArr[index].rotate = getDegRandom(30);
             })
             //布局左右两侧的图片
             for(let i = 0, j = imgsArrangeArr.length, k = j / 2; i < j ; i++ ){
@@ -82,6 +91,7 @@ let Constant = {
                     top: getRangeRandom(hPosRangeY[0], hPosRangeY[1]),
                     left: getRangeRandom(hPosRangeLorX[0], hPosRangeLorX[1])
                 }
+                imgsArrangeArr[i].rotate = getDegRandom(30);
 
             }
             // 把在上侧区域的图片放回原来数组
@@ -91,7 +101,8 @@ let Constant = {
             // 把中间的图片放回原来数组
             imgsArrangeArr.splice(centerIndex, 0, imgsArrangeCenterArr[0]);
             //改变state
-            
+
+
             	return imgsArrangeArr;
             }
 

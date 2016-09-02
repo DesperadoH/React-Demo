@@ -3,20 +3,61 @@ require('styles/App.css');
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Constant from './control.js';
 
-let Constant = require('./control.js');
+//let Constant = require('./control.js');
 
 class ImgFigure extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  //点击处理函数
+  handleClick(e){
+  
+        this.props.inverse();
+        e.stopPropagation();
+        e.preventDefault();
+
+  }
+ 
+
   render(){
     let styleObj = {};
     if(this.props.arrange){
-        styleObj = this.props.arrange.pos;
+        styleObj = {
+            left: this.props.arrange.pos.left,
+            top: this.props.arrange.pos.top
+        }
+    }
+    // if(this.props.arrange.rotate){
+    //  (['-moz-', '-ms-', '-webkit-', '']).forEach(function(value){
+    //     styleObj[value + 'transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
+    //   }.bind(this));
+    // }
+    if(this.props.arrange.rotate){
+      styleObj['transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
+    }
+    // let ImgclassName = 'img-figure';
+    //     ImgclassName += this.props.arrange.isInverse ? ' is-inverse'  : '';
+    let ImgclassName = '';
+    if(this.props.arrange.isInverse){
+        ImgclassName = 'img-figure is-inverse';
+    }else{
+        ImgclassName = 'img-figure';
     }
     return (
-        <figure className="img-figure" style={styleObj}>
+        <figure className={ImgclassName} style={styleObj} onClick={this.handleClick}>
           <img src={this.props.data.URL} alt={this.props.data.title} />
-          <figcaption>
+          <figcaption >
             <h2 className="img-title">{this.props.data.title}</h2>
+            <div className="img-back" onClick={this.handleClick}> 
+              <p>
+                {this.props.data.des}
+              </p>
+            </div>
           </figcaption>
         </figure>
       );
@@ -50,15 +91,19 @@ class AppComponent extends React.Component {
 
     //拿到舞台大小
     let stageDOM = ReactDOM.findDOMNode(this.refs.stage),
-      stageW = stageDOM.scrollWidth,
-      stageH = stageDOM.scrollHeight,
+      // stageW = stageDOM.scrollWidth,
+      // stageH = stageDOM.scrollHeight,
+      stageW = stageDOM.offsetWidth,
+      stageH = stageDOM.offsetHeight,
       halfStageW = Math.ceil( stageW / 2),
       halfStageH = Math.ceil( stageH / 2);
       
     //拿到imageFigure的大小
     let imgFigureDOM = ReactDOM.findDOMNode(this.refs.imgFigure0),
-      imgW = imgFigureDOM.scrollWidth,
-      imgH = imgFigureDOM.scrollHeight,
+      // imgW = imgFigureDOM.scrollWidth,
+      // imgH = imgFigureDOM.scrollHeight,
+      imgW = imgFigureDOM.offsetWidth,
+      imgH = imgFigureDOM.offsetHeight,
       halfImgW = Math.ceil(imgW / 2),
       halfImgH = Math.ceil(imgH / 2);
       
@@ -84,10 +129,22 @@ class AppComponent extends React.Component {
     Constant.vPosRange.x[1] = halfStageW;
     let centerNum = Math.floor(Math.random() * (0 - Constant.imageDatas.length) + Constant.imageDatas.length)
     let arr = Constant.rearrange(centerNum, this.state.imgsArrangeArr);
+    console.log(arr);
     this.setState({
         imgsArrangeArr: arr
     })
-  } 
+    console.log(this.state.imgsArrangeArr);
+  }
+  inverse(index) {
+    return function(){
+      let imgsArrangeArr = this.state.imgsArrangeArr;
+      imgsArrangeArr[index].isInverse = !imgsArrangeArr[index].isInverse;
+      this.setState({
+        imgsArrangeArr: imgsArrangeArr
+      })
+    }.bind(this);
+
+  }
 
 
   render() {
@@ -99,7 +156,9 @@ class AppComponent extends React.Component {
                       pos: {
                         left: 0,
                         top: 0
-                      }
+                      },
+                      rotate: 0,
+                      isInverse: false
                   }
               }
               imgFigures.push(
@@ -107,7 +166,8 @@ class AppComponent extends React.Component {
                     key={index}
                     data={value}
                     ref={'imgFigure' + index}
-                    arrange={this.state.imgsArrangeArr[index]} 
+                    arrange={this.state.imgsArrangeArr[index]}
+                    inverse={this.inverse(index)} 
                   />
                 )
     }.bind(this));
@@ -125,7 +185,7 @@ class AppComponent extends React.Component {
     );
   }
 }
-
+///////////////////
 AppComponent.defaultProps = {
 };
 
